@@ -1,0 +1,16 @@
+export const GAME_CONFIG = {
+// Stat Value
+    MAX_STAT_VALUE: 20,
+// Attack Range
+    MIN_ATTACK_RANGE: .85,
+    MAX_ATTACK_RANGE: 1.15,
+// Evasion
+    BASE_EVASION_CHANCE: 10,
+    MAX_EVASION_CHANCE: 75,
+// Critical Hits & Luck
+  BASE_CRIT_MULTIPLIER: 1,
+  BASE_CRIT_CHANCE: 5,
+  MAX_CRIT_CHANCE: 60,
+  CRIT_DAMAGE_MULTIPLIER: 1.5,
+}
+
