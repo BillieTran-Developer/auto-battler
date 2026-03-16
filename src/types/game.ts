@@ -27,6 +27,26 @@ export type DwarfSubClass = null; // Placeholder for future Dwarf sub classes
 // Master SubClass Bucket (Added GENERAL here too)
 export type SubClass = HumanSubClass | ElfSubClass | DwarfSubClass | "ALL" | null; 
 
+
+export interface Character {
+    kingdom: Kingdom;
+    name: string;
+    maxHP: number;
+    maxMana: number;
+    stats: {
+        str: number;
+        def: number;
+        int: number;
+        agi: number;
+        lck: number;
+    };
+    equipped: Record<Slot, Equipment | null>;
+    artifacts: Artifact[];
+    inventory: Equipment[];
+    equippedSkills: Skill[];
+    statusEffects: any[];
+}
+
 export interface Equipment {
   id: number;
   kingdom: Kingdom | "GENERAL";
@@ -49,22 +69,27 @@ export interface Equipment {
   effect: string;
 }
 
-export interface Character {
-    kingdom: Kingdom;
+// The master blueprint for every attack
+export interface Skill {
+    id: string;
     name: string;
-    maxHP: number;
-    maxMana: number;
-    stats: {
-        str: number;
-        def: number;
-        int: number;
-        agi: number;
-        lck: number;
-    };
-    equipped: Record<Slot, Equipment | null>;
-    artifacts: Artifact[];
-    inventory: Equipment[];
-    statusEffects: any[];
+    description: string;
+    
+    // THE MECHANICS
+    type: "PHYSICAL" | "MAGICAL" | "HEAL" | "BUFF";
+    targetMode: "SINGLE" | "ALL_ENEMIES" | "SELF" | "ALL_ALLIES";
+    
+    // THE MATH
+    powerMultiplier: number; 
+    manaCost: number;     
+    hpCost?: number; // Optional: Only used for self-damaging moves like Desperate Struggle
+    
+    // THE COOLDOWN SYSTEM
+    cooldownTicks: number;   // Max cooldown (1 tick = 100ms. So 20 = 2 seconds)
+    currentCooldown: number; // Live tracker that counts down to 0
+    
+    // THE TIMING
+    animationSpeed: number;  
 }
 
 export interface Enemy {
@@ -81,7 +106,7 @@ export interface Enemy {
         lck: number;
     };
     attackPattern: string[]; 
-    specialAttacks: string[];
+    specialAttacks: Skill[];
     description: string;
     statusEffects: any[];
 }

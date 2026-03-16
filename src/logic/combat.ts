@@ -43,12 +43,12 @@ export const calculateCombatStats = (character: Character) => {
         name: characterName,
         maxHp: totalMaxHp,
         maxMana: totalMaxMana,
-        str: totalStr,
-        pierce: totalPierce,
-        def: totalDef,
-        int: totalInt,
-        agi: totalAgi,
-        lck: totalLck
+        str: Math.min(GAME_CONFIG.MAX_STAT_VALUE, Math.max(0, totalStr)),
+        pierce: Math.max(0, totalPierce),
+        def: Math.min(GAME_CONFIG.MAX_STAT_VALUE, Math.max(0, totalDef)),
+        int: Math.min(GAME_CONFIG.MAX_STAT_VALUE, Math.max(0, totalInt)),
+        agi: Math.min(GAME_CONFIG.MAX_STAT_VALUE, Math.max(0, totalAgi)),
+        lck: Math.min(GAME_CONFIG.MAX_STAT_VALUE, Math.max(0, totalLck))
     };
 }
 // This function calculates the critical hit chance based on the attacker's luck stat. It returns true if the attack is a critical hit, and false otherwise.
@@ -64,9 +64,9 @@ export const calculateCritChance = (attackerStats: { lck: number }) => {
 // This function calculates the damage of an attack based on the attacker's stats and the defender's stats, and also determines if it's a critical hit. It returns an object containing the physical damage, magical damage, and whether it was a critical hit.
 export const calculateDamage = (attackerStats: { str: number, pierce: number, int: number, lck: number }, defenderStats: { def: number, int: number }): { physical: number, magical: number, isCrit: boolean } => {
     // If pierce is present, it adds to physical damage and ignores defense
-    const pierceDamage = Math.min(1, attackerStats.pierce || 0);
+    const piercePercent = Math.min(1, attackerStats.pierce || 0);
     // Multiply the defender's def by the remaining percentage (e.g., 1 - 0.2 = 0.8)
-    const effectiveDef = defenderStats.def * (1 - pierceDamage);
+    const effectiveDef = defenderStats.def * (1 - piercePercent);
     // Calculate the raw damage (Attacker's Attack minus Defender's Defense)
     const basePhysicalDamage = attackerStats.str - effectiveDef;
     const baseMagicalDamage = attackerStats.int - defenderStats.int;
@@ -89,10 +89,7 @@ export const calculateDamage = (attackerStats: { str: number, pierce: number, in
     }
     // 3. Return the final damage number
     return parallelDamage;
-    
 }
-
-//calculateCritChance(luck)
 
 export const calculateEvasion = (attackerStats: { agi: number }, defenderStats: { agi: number }) => {
     const agilityDifference = defenderStats.agi - attackerStats.agi;
