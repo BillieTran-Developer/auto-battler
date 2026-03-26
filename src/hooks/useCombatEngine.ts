@@ -162,10 +162,10 @@ export const useCombatEngine = (player: Character, enemies: Enemy[]) => {
                 // Character skills selections
                 let selectedSkill: Skill | null = null;
 
-                if(!player.equippedSkills || player.equippedSkills.length === 0) {
+                if(playerSkillsRef.current.length === 0) {
                     selectedSkill = desperateStruggle;
                 } else {
-                    const readySkills = player.equippedSkills.filter(skill => skill.currentCooldown === 0 && playerManaRef.current >= skill.manaCost);
+                    const readySkills = playerSkillsRef.current.filter(skill => skill.currentCooldown === 0 && playerManaRef.current >= skill.manaCost);
 
                     if(readySkills.length > 0) {
                         selectedSkill = readySkills.reduce((prev, current) => (prev.manaCost > current.manaCost) ? prev : current );
@@ -192,13 +192,20 @@ export const useCombatEngine = (player: Character, enemies: Enemy[]) => {
 
                 if (isEvasionSuccessful) {
                     setCombatLog(prev => [...prev, `${currentTargetEnemy.name} evades ${player.name}'s attack! (+5 Mana)`]);
-                    currentTargetEnemy.currentMana = Math.min(currentTargetEnemy.maxMana, currentTargetEnemy.currentMana + 5);
+                    activeEnemiesRef.current = activeEnemiesRef.current.map(enemy => 
+                        enemy.id === currentTargetEnemy.id ? { ...enemy, currentMana: Math.min(enemy.maxMana, enemy.currentMana + 5)}
+                        : enemy
+                    );
                 } else {
                     const damageDealt = executeAttack({ name: player.name, str: playerStats.str, pierce: playerStats.pierce || 0, int: playerStats.int, lck: playerStats.lck }, 
                         { name: currentTargetEnemy.name, def: currentTargetEnemy.stats.def, int: currentTargetEnemy.stats.int }, 
                         selectedSkill?.powerMultiplier || 1.0);
 
-                    currentTargetEnemy.currentHP = Math.max(0, currentTargetEnemy.currentHP - damageDealt);
+                    activeEnemiesRef.current = activeEnemiesRef.current.map(enemy => 
+                        enemy.id === currentTargetEnemy.id
+                        ? { ...enemy, currentHP: Math.max(0, enemy.currentHP - damageDealt)}
+                        : enemy
+                    );
                     if(playerManaRef.current > 0) {
                         // For now, just do a magical attack that uses mana instead of energy
                     }

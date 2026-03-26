@@ -67,6 +67,7 @@ export interface Equipment {
   };
   description: string;
   effect: string;
+  icon?: string;
 }
 
 // The master blueprint for every attack

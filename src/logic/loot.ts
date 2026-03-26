@@ -1,5 +1,5 @@
   import { type Equipment, type Rarity, type Kingdom } from "../types/game";
-  import { HUMAN_LOOT_POOL, ELF_LOOT_POOL, DWARF_LOOT_POOL } from "../data/item";
+  import { HUMAN_LOOT_POOL, ELF_LOOT_POOL, DWARF_LOOT_POOL } from "../data";
 
   // Rolls a random number to determine the rarity of the item found
   export const rarityRoller =(luckBonus: number = 0): Rarity => {
